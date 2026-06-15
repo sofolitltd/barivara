@@ -110,6 +110,7 @@ class DashboardRepository {
 
     // Group unit IDs by property for filtering renters/invoices
     final unitIdsByProp = <String, List<String>>{};
+    final unitNameMap = <String, String>{};
     for (final propId in propIds) {
       unitIdsByProp[propId] = [];
     }
@@ -118,6 +119,7 @@ class DashboardRepository {
       final propId = unitDoc.data()['propertyId'] as String?;
       if (propId == null || !propIds.contains(propId)) continue;
       unitIdsByProp[propId]!.add(unitDoc.id);
+      unitNameMap[unitDoc.id] = unitDoc.data()['unitNumber'] as String? ?? unitDoc.id;
 
       if (unitDoc.data()['isOccupied'] == false) {
         vacantCount++;
@@ -126,7 +128,8 @@ class DashboardRepository {
       }
     }
 
-    final activeRenterUnitIds = <String>{};
+    // Build a map of unitId → active tenant name
+    final unitTenantMap = <String, String>{};
     for (final renterDoc in renterDocs) {
       final d = renterDoc.data();
       final propId = d['propertyId'] as String?;
@@ -134,15 +137,16 @@ class DashboardRepository {
       if (propId == null || unitId == null || !propIds.contains(propId)) continue;
 
       if (d['status'] == 'active') {
-        activeRenterUnitIds.add(unitId);
+        unitTenantMap[unitId] = d['name'] as String? ?? '';
         totalDeposit += (d['depositAmount'] as num? ?? 0).toDouble();
       }
 
       final createdAt = _parseDate(d['createdAt']);
       if (createdAt != null) {
+        final unitLabel = unitNameMap[unitId] ?? unitId;
         activities.add(DashboardActivity(
           title: 'New Renter: ${d['name']}',
-          subtitle: 'Joined ${propNameMap[propId] ?? ''}',
+          subtitle: 'Joined ${propNameMap[propId] ?? ''} · Unit $unitLabel',
           icon: Icons.person_add_rounded,
           iconColor: const Color(0xFF8B5CF6),
           timestamp: createdAt,
@@ -158,6 +162,8 @@ class DashboardRepository {
       if (propId == null || unitId == null || !propIds.contains(propId)) continue;
 
       final amount = (invData['totalAmount'] as num? ?? 0).toDouble();
+      final unitLabel = unitNameMap[unitId] ?? unitId;
+      final tenantName = unitTenantMap[unitId];
 
       if (invData['status'] == 'paid') {
         totalRev += amount;
@@ -174,7 +180,9 @@ class DashboardRepository {
           processedUnitIds.add(unitId);
           activities.add(DashboardActivity(
             title: 'Payment Received',
-            subtitle: '৳$amount received for ${invData['monthYear'] ?? invData['month']}',
+            subtitle: tenantName != null
+                ? '৳$amount · Unit $unitLabel ($tenantName)'
+                : '৳$amount · Unit $unitLabel',
             icon: Icons.check_circle_rounded,
             iconColor: const Color(0xFF10B981),
             timestamp: dt ?? now,
@@ -187,7 +195,9 @@ class DashboardRepository {
         if (createdAt != null) {
           activities.add(DashboardActivity(
             title: 'Invoice Generated',
-            subtitle: 'Pending ৳$amount for ${invData['monthYear'] ?? invData['month']}',
+            subtitle: tenantName != null
+                ? 'Pending ৳$amount · Unit $unitLabel ($tenantName)'
+                : 'Pending ৳$amount · Unit $unitLabel',
             icon: Icons.receipt_long_rounded,
             iconColor: const Color(0xFFF59E0B),
             timestamp: createdAt,
