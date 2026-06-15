@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "barivara-bd"
+  },
+  "targets": {
+    "barivara-bd": {
+      "hosting": {
+        "barivarabd": [
+          "barivarabd"
+        ]
+      }
+    }
+  }
+}
