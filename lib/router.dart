@@ -1,4 +1,5 @@
 import '/features/billing/pages/invoice_view_page.dart';
+import '/features/billing/pages/unpaid_invoices_page.dart';
 import '/features/billing/models/invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -109,6 +110,13 @@ final GoRouter router = GoRouter(
               path: '/landlord/dashboard',
               pageBuilder: (context, state) =>
                   _page('Dashboard', const HomePage()),
+            ),
+            GoRoute(
+              path: '/landlord/unpaid-invoices',
+              pageBuilder: (context, state) {
+                final ownerId = state.extra as String;
+                return _page('Unpaid Invoices', UnpaidInvoicesPage(ownerId: ownerId));
+              },
             ),
           ],
         ),

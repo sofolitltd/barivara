@@ -99,10 +99,14 @@ class DashboardRepository {
 
     final Map<String, double> monthlyMap = {};
     final now = DateTime.now();
-    const monthNames = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
+const monthNames = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+const fullMonthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
     for (int i = 5; i >= 0; i--) {
       final d = DateTime(now.year, now.month - i, 1);
       monthlyMap['${monthNames[d.month - 1]} ${d.year}'] = 0;
@@ -168,11 +172,20 @@ class DashboardRepository {
       if (invData['status'] == 'paid') {
         totalRev += amount;
 
-        final dt = _parseDate(invData['paidAt']);
-        if (dt != null) {
-          final key = '${monthNames[dt.month - 1]} ${dt.year}';
-          if (monthlyMap.containsKey(key)) {
-            monthlyMap[key] = (monthlyMap[key] ?? 0) + amount;
+        final paidAt = _parseDate(invData['paidAt']);
+
+        final monthYearStr = invData['monthYear'] as String?;
+        if (monthYearStr != null) {
+          final parts = monthYearStr.split(' ');
+          if (parts.length == 2) {
+            final monthIdx = fullMonthNames.indexOf(parts[0]);
+            final year = int.tryParse(parts[1]);
+            if (monthIdx != -1 && year != null) {
+              final key = '${monthNames[monthIdx]} $year';
+              if (monthlyMap.containsKey(key)) {
+                monthlyMap[key] = (monthlyMap[key] ?? 0) + amount;
+              }
+            }
           }
         }
 
@@ -185,7 +198,7 @@ class DashboardRepository {
                 : '৳$amount · Unit $unitLabel',
             icon: Icons.check_circle_rounded,
             iconColor: const Color(0xFF10B981),
-            timestamp: dt ?? now,
+            timestamp: paidAt ?? now,
           ));
         }
       } else {

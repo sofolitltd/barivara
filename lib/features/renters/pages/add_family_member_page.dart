@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import '/features/renters/models/renter.dart';
 import '/shared/widgets/responsive_layout.dart';
 import '../widgets/document_dialog.dart';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AddFamilyMemberPage extends StatefulWidget {
@@ -179,7 +180,7 @@ class _AddFamilyMemberPageState extends State<AddFamilyMemberPage> {
                           image: _photo != null
                               ? (kIsWeb 
                                   ? DecorationImage(image: NetworkImage(_photo!.path), fit: BoxFit.cover)
-                                  : DecorationImage(image: AssetImage(_photo!.path), fit: BoxFit.cover)) // Focus on Wasm for now
+                                  : DecorationImage(image: FileImage(File(_photo!.path)), fit: BoxFit.cover))
                               : (_existingPhotoUrl != null
                                   ? DecorationImage(image: NetworkImage(_existingPhotoUrl!), fit: BoxFit.cover)
                                   : null),

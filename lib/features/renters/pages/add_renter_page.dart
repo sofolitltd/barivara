@@ -6,8 +6,7 @@ import '/features/renters/models/renter.dart';
 import '/features/renters/repositories/renter_repository.dart';
 import '/shared/widgets/responsive_layout.dart';
 import '/shared/services/cloudinary_service.dart';
-import '/features/renters/widgets/document_dialog.dart';
-import '/features/renters/pages/add_family_member_page.dart';
+import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../../../shared/providers/home_providers.dart'
@@ -45,14 +44,9 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
   DateTime _moveInDate = DateTime.now();
   DateTime? _moveOutDate;
   bool _isSubmitting = false;
-  List<FamilyMember> _familyMembers = [];
-  List<RenterDocument> _documents = [];
 
   XFile? _renterImage;
   String? _existingPhotoUrl;
-  final List<XFile?> _familyMemberImages = [];
-  final List<List<XFile?>> _familyMemberDocumentFiles = [];
-  final List<XFile?> _documentFiles = [];
 
   final _picker = ImagePicker();
 
@@ -83,19 +77,6 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
             _notesController.text = renter.landlordNotes ?? '';
             _moveInDate = renter.moveInDate;
             _moveOutDate = renter.moveOutDate;
-            _familyMembers = List.from(renter.familyMembers);
-            _documents = List.from(renter.documents);
-
-            // Initialize file lists with nulls to match existing data indices
-            _documentFiles.addAll(
-              List.generate(_documents.length, (_) => null),
-            );
-            _familyMemberImages.addAll(
-              List.generate(_familyMembers.length, (_) => null),
-            );
-            _familyMemberDocumentFiles.addAll(
-              List.generate(_familyMembers.length, (_) => []),
-            );
           });
         });
       });
@@ -134,60 +115,21 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
     final renterRepo = ref.read(renterRepositoryProvider);
 
     try {
-      // 1. Upload Renter Image
+      // Delete old renter photo if replacing
+      if (_renterImage != null && _existingPhotoUrl != null) {
+        await CloudinaryService.deleteImage(_existingPhotoUrl!);
+      }
+
+      // Upload Renter Image
       String? renterPhotoUrl = _existingPhotoUrl;
       if (_renterImage != null) {
         final url = await CloudinaryService.uploadImage(_renterImage!);
         if (url != null) renterPhotoUrl = url;
-      }
-
-      // 3. Upload Family Member Photos and Documents
-      final updatedFamilyMembers = <FamilyMember>[];
-      for (int i = 0; i < _familyMembers.length; i++) {
-        var member = _familyMembers[i];
-
-        // Upload photo
-        if (i < _familyMemberImages.length && _familyMemberImages[i] != null) {
-          final url = await CloudinaryService.uploadImage(
-            _familyMemberImages[i]!,
-          );
-          if (url != null) member = member.copyWith(photoUrl: url);
-        }
-
-        // Upload documents
-        if (i < _familyMemberDocumentFiles.length) {
-          final memberDocs = List<RenterDocument>.from(member.documents);
-          final memberFiles = _familyMemberDocumentFiles[i];
-          final updatedMemberDocs = <RenterDocument>[];
-
-          for (int j = 0; j < memberDocs.length; j++) {
-            var doc = memberDocs[j];
-            if (j < memberFiles.length && memberFiles[j] != null) {
-              final url = await CloudinaryService.uploadImage(memberFiles[j]!);
-              if (url != null) doc = doc.copyWith(url: url);
-            }
-            updatedMemberDocs.add(doc);
-          }
-          member = member.copyWith(documents: updatedMemberDocs);
-        }
-
-        updatedFamilyMembers.add(member);
-      }
-
-      // 4. Upload Renter Documents
-      final updatedDocuments = <RenterDocument>[];
-      for (int i = 0; i < _documents.length; i++) {
-        var doc = _documents[i];
-        if (i < _documentFiles.length && _documentFiles[i] != null) {
-          final url = await CloudinaryService.uploadImage(_documentFiles[i]!);
-          if (url != null) doc = doc.copyWith(url: url);
-        }
-        updatedDocuments.add(doc);
       }
 
       final renter = Renter(
@@ -211,12 +153,10 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
             : renterPhotoUrl,
         advanceDeposit: int.parse(_depositController.text.trim()),
         moveInDate: _moveInDate,
-        familyMembers: updatedFamilyMembers,
         moveOutDate: _moveOutDate,
         landlordNotes: _notesController.text.trim().isEmpty
             ? null
             : _notesController.text.trim(),
-        documents: updatedDocuments,
       );
 
       if (widget.renterId != null) {
@@ -422,12 +362,6 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  _sectionLabel('Documents (NID, Visiting Card, etc.)'),
-                  _buildDocumentSection(isDark),
-                  const SizedBox(height: 32),
-                  _sectionLabel('Other Members (Family)'),
-                  _buildFamilyMemberSection(isDark),
-                  const SizedBox(height: 32),
 
                   _sectionLabel('Internal Notes (Landlord Only)'),
                   _buildField(
@@ -610,9 +544,7 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
                             fit: BoxFit.cover,
                           )
                         : DecorationImage(
-                            image: AssetImage(
-                              file.path,
-                            ), // This is still wrong for mobile but we are focusing on fixing Wasm now
+                            image: FileImage(File(file.path)),
                             fit: BoxFit.cover,
                           ))
                   : (currentUrl != null && currentUrl.isNotEmpty)
@@ -662,184 +594,4 @@ class _AddRenterPageState extends ConsumerState<AddRenterPage> {
     );
   }
 
-  Widget _buildDocumentSection(bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.grey[200]!),
-      ),
-      child: Column(
-        children: [
-          if (_documents.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(
-                child: Text(
-                  'No documents added yet',
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              ),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _documents.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1,
-                color: isDark ? Colors.white10 : Colors.grey[200],
-              ),
-              itemBuilder: (context, index) {
-                final doc = _documents[index];
-                return ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.description_outlined, size: 20),
-                  title: Text(
-                    doc.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.remove_circle_outline,
-                      color: Colors.red,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _documents.removeAt(index);
-                        if (index < _documentFiles.length) {
-                          _documentFiles.removeAt(index);
-                        }
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextButton.icon(
-              onPressed: _showProfessionalDocumentDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add Document'),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF6366F1),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showProfessionalDocumentDialog() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ProfessionalDocumentDialog(
-        onAdd: (doc, file) {
-          setState(() {
-            _documents.add(doc);
-            _documentFiles.add(file);
-          });
-        },
-      ),
-    );
-  }
-
-  Future<void> _navigateToAddFamilyMember() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AddFamilyMemberPage()),
-    );
-
-    if (result != null && result is Map<String, dynamic>) {
-      setState(() {
-        _familyMembers.add(result['member'] as FamilyMember);
-        _familyMemberImages.add(result['photoFile'] as XFile?);
-        _familyMemberDocumentFiles.add(result['documentFiles'] as List<XFile?>);
-      });
-    }
-  }
-
-  Widget _buildFamilyMemberSection(bool isDark) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.grey.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Column(
-        children: [
-          if (_familyMembers.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: Text(
-                  'No family members added yet',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 13),
-                ),
-              ),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _familyMembers.length,
-              separatorBuilder: (context, index) => Divider(
-                height: 1,
-                color: isDark ? Colors.white10 : Colors.grey[200],
-              ),
-              itemBuilder: (context, index) {
-                final member = _familyMembers[index];
-                return ListTile(
-                  dense: true,
-                  leading: const CircleAvatar(
-                    radius: 12,
-                    child: Icon(Icons.person, size: 12),
-                  ),
-                  title: Text(
-                    member.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(member.relation),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.remove_circle_outline,
-                      color: Colors.red,
-                      size: 20,
-                    ),
-                    onPressed: () =>
-                        setState(() => _familyMembers.removeAt(index)),
-                  ),
-                );
-              },
-            ),
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextButton.icon(
-              onPressed: _navigateToAddFamilyMember,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add Family Member'),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF6366F1),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

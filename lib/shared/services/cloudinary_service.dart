@@ -41,8 +41,8 @@ class CloudinaryService {
           filename: file.name,
         ));
 
-      final response = await request.send();
-      final responseData = await response.stream.toBytes();
+      final response = await request.send().timeout(const Duration(seconds: 60));
+      final responseData = await response.stream.toBytes().timeout(const Duration(seconds: 30));
       final responseString = String.fromCharCodes(responseData);
       final jsonMap = jsonDecode(responseString);
 

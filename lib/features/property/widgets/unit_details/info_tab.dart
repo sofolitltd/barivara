@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import '../../models/property.dart';
 import '../../models/unit.dart';
 import 'unit_stat_grid.dart';
@@ -40,7 +40,7 @@ class InfoTab extends StatelessWidget {
     }
   }
 
-  Widget _buildMetersCard() {
+  Widget _buildMetersCard(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -93,120 +93,43 @@ class InfoTab extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      entry.key,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    entry.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.grey[300] : Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHistoryCard({
-    required String title,
-    required List<dynamic> entries,
-    required String Function(dynamic) getAmount,
-    required DateTime Function(dynamic) getDate,
-    required String? Function(dynamic) getReason,
-  }) {
-    if (entries.isEmpty) return const SizedBox.shrink();
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.grey.withValues(alpha: 0.12),
-        ),
-        boxShadow: isDark
-            ? []
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...entries.asMap().entries.map((entry) {
-            final e = entry.value;
-            final isFirst = entry.key == 0;
-            return Padding(
-              padding: EdgeInsets.only(bottom: isFirst ? 0 : 12),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: _primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      isFirst ? Icons.circle : Icons.circle_outlined,
-                      color: _primaryColor,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          getAmount(e),
+                          entry.key,
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (getReason(e) != null)
+                        if (entry.value.isNotEmpty)
                           Text(
-                            getReason(e)!,
+                            entry.value,
                             style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: isDark ? Colors.grey[300] : Colors.grey[600],
+                              fontFamily: 'monospace',
                             ),
                           ),
                       ],
                     ),
                   ),
-                  Text(
-                    DateFormat('MMM d, yyyy').format(getDate(e)),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  if (entry.value.isNotEmpty)
+                    IconButton(
+                      icon: Icon(Icons.copy_rounded, size: 16, color: Colors.grey[500]),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: entry.value));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(minutes: 5),
+                            content: Text('Copied: ${entry.value}'),
+                            action: SnackBarAction(label: '✕', textColor: Colors.white, onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar()),
+                          ),
+                        );
+                      },
                     ),
-                  ),
                 ],
               ),
             );
@@ -274,42 +197,10 @@ class InfoTab extends StatelessWidget {
       UnitStatGrid(stats: stats, isDark: isDark),
     ];
 
-    final sortedRentHistory = List<RentConfig>.from(unit.rentHistory)
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
-
-    if (sortedRentHistory.isNotEmpty) {
-      children.addAll([
-        const SizedBox(height: 20),
-        _buildHistoryCard(
-          title: 'Rent History',
-          entries: sortedRentHistory,
-          getAmount: (e) => '৳${(e as RentConfig).amount}',
-          getDate: (e) => (e as RentConfig).startDate,
-          getReason: (e) => (e as RentConfig).reason,
-        ),
-      ]);
-    }
-
-    final sortedDepositHistory = List<DepositConfig>.from(unit.depositHistory)
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
-
-    if (sortedDepositHistory.isNotEmpty) {
-      children.addAll([
-        const SizedBox(height: 20),
-        _buildHistoryCard(
-          title: 'Deposit History',
-          entries: sortedDepositHistory,
-          getAmount: (e) => '৳${(e as DepositConfig).amount}',
-          getDate: (e) => (e as DepositConfig).startDate,
-          getReason: (e) => (e as DepositConfig).reason,
-        ),
-      ]);
-    }
-
     if (unit.meters.isNotEmpty) {
       children.addAll([
         const SizedBox(height: 20),
-        _buildMetersCard(),
+        _buildMetersCard(context),
       ]);
     }
 

@@ -173,7 +173,7 @@ class _InvoiceDetailsPageState extends ConsumerState<InvoiceDetailsPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
-                            '#${invoice.id}',
+                            '#${invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : invoice.id.substring(0, 6)}',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,

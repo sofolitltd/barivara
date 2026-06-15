@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../billing/models/invoice.dart';
 import '../../../billing/widgets/invoice_list_tile.dart';
+import '../../../renters/repositories/renter_repository.dart';
 import 'common.dart';
 
-class BillingTab extends StatelessWidget {
+class BillingTab extends ConsumerWidget {
   final AsyncValue<List<Invoice>> invoicesAsync;
   final bool isDark;
   final String propertyId;
@@ -49,8 +50,51 @@ class BillingTab extends StatelessWidget {
     }
   }
 
+  void _deleteInvoice(BuildContext context, WidgetRef ref, Invoice invoice) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Invoice', style: TextStyle(color: Colors.red)),
+        content: Text('Delete invoice for ${invoice.monthYear} (#${invoice.invoiceNumber})? This cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await ref.read(renterRepositoryProvider).deleteInvoice(invoice.id);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(minutes: 5),
+            content: Text('Invoice #${invoice.invoiceNumber} deleted'),
+            action: SnackBarAction(label: '✕', textColor: Colors.white, onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar()),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(minutes: 5),
+            content: Text('Error deleting: $e'),
+            action: SnackBarAction(label: '✕', textColor: Colors.white, onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar()),
+          ),
+        );
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -98,6 +142,11 @@ class BillingTab extends StatelessWidget {
                     onTap: () => context.push(
                       '/landlord/properties/$propertyId/units/$unitId/invoice-details/${invoice.id}',
                     ),
+                    onEdit: () => context.push(
+                      '/landlord/properties/$propertyId/units/$unitId/edit-bill/${invoice.id}',
+                      extra: invoice,
+                    ),
+                    onDelete: () => _deleteInvoice(context, ref, invoice),
                   );
                 }).toList(),
               );

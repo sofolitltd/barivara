@@ -39,7 +39,7 @@ class HomePage extends ConsumerWidget {
                   final statsAsync = ref.watch(dashboardStatsProvider(user.uid));
                   return statsAsync.when(
                     data: (stats) => _buildDashboard(
-                      context, ref, isDark, isDesktop, user.name, stats,
+                      context, ref, isDark, isDesktop, user.name, user.uid, stats,
                     ),
                     loading: () => const Center(child: CircularProgressIndicator()),
                     error: (e, _) => _buildErrorState(context, e.toString()),
@@ -61,6 +61,7 @@ class HomePage extends ConsumerWidget {
     bool isDark,
     bool isDesktop,
     String name,
+    String ownerId,
     DashboardStats stats,
   ) {
     return CustomScrollView(
@@ -73,7 +74,7 @@ class HomePage extends ConsumerWidget {
               children: [
                 _buildHeader(context, ref, isDark, isDesktop, name, stats),
                 const SizedBox(height: 32),
-                _buildKpiGrid(context, isDark, isDesktop, stats),
+                _buildKpiGrid(context, isDark, isDesktop, stats, ownerId),
                 const SizedBox(height: 32),
                 if (isDesktop)
                   Row(
@@ -215,6 +216,7 @@ class HomePage extends ConsumerWidget {
     bool isDark,
     bool isDesktop,
     DashboardStats stats,
+    String ownerId,
   ) {
     final kpis = [
       _KpiData(
@@ -247,7 +249,7 @@ class HomePage extends ConsumerWidget {
         icon: Icons.receipt_long_rounded,
         color: const Color(0xFFEF4444),
         subtitle: '${stats.vacantUnitsCount} vacant units',
-        onTap: () => context.go('/landlord/properties'),
+        onTap: () => context.push('/landlord/unpaid-invoices', extra: ownerId),
       ),
     ];
 
@@ -449,17 +451,18 @@ class HomePage extends ConsumerWidget {
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 28,
+            reservedSize: 36,
+            interval: 1,
             getTitlesWidget: (v, _) {
               final idx = v.toInt();
               if (idx < 0 || idx >= data.length) return const SizedBox();
-              // Show short month label: "Jan", "Feb", etc.
               final parts = data[idx].month.split(' ');
               return Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  parts[0],
-                  style: TextStyle(fontSize: 10, color: labelColor),
+                  parts.length == 2 ? '${parts[0]}\n${parts[1]}' : parts[0],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 9, color: labelColor, height: 1.2),
                 ),
               );
             },

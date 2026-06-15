@@ -486,8 +486,8 @@ return $default(_that.name,_that.relation,_that.age,_that.nid,_that.phone,_that.
 /// @nodoc
 @JsonSerializable()
 
-class _FamilyMember implements FamilyMember {
-  const _FamilyMember({required this.name, required this.relation, this.age, this.nid, this.phone, this.email, this.occupation, this.photoUrl, final  List<RenterDocument> documents = const [], this.isEmergencyContact = false}): _documents = documents;
+class _FamilyMember extends FamilyMember {
+  const _FamilyMember({required this.name, required this.relation, this.age, this.nid, this.phone, this.email, this.occupation, this.photoUrl, final  List<RenterDocument> documents = const [], this.isEmergencyContact = false}): _documents = documents,super._();
   factory _FamilyMember.fromJson(Map<String, dynamic> json) => _$FamilyMemberFromJson(json);
 
 @override final  String name;

@@ -12,8 +12,8 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: "asifreyad1@gmail.com");
+  final _passwordController = TextEditingController(text: "12345678");
   bool _isLoading = false;
 
   Future<void> _login() async {

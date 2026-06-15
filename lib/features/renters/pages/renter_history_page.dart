@@ -291,6 +291,9 @@ class RenterHistoryPage extends ConsumerWidget {
                             if (member.photoUrl != null) {
                               urlsToDelete.add(member.photoUrl!);
                             }
+                            for (final doc in member.documents) {
+                              urlsToDelete.add(doc.url);
+                            }
                           }
                           for (final doc in renter.documents) {
                             urlsToDelete.add(doc.url);

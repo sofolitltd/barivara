@@ -31,8 +31,23 @@ abstract class FamilyMember with _$FamilyMember {
     @Default(false) bool isEmergencyContact,
   }) = _FamilyMember;
 
+  const FamilyMember._();
+
   factory FamilyMember.fromJson(Map<String, dynamic> json) =>
       _$FamilyMemberFromJson(json);
+
+  Map<String, dynamic> toDocument() => {
+        'name': name,
+        'relation': relation,
+        'age': age,
+        'nid': nid,
+        'phone': phone,
+        'email': email,
+        'occupation': occupation,
+        'photoUrl': photoUrl,
+        'documents': documents.map((d) => d.toJson()).toList(),
+        'isEmergencyContact': isEmergencyContact,
+      };
 }
 
 @freezed
@@ -73,4 +88,24 @@ abstract class Renter with _$Renter {
     }
     return Renter.fromJson(data).copyWith(id: docId);
   }
+
+  Map<String, dynamic> toDocument() => {
+        'id': id,
+        'propertyId': propertyId,
+        'unitId': unitId,
+        'name': name,
+        'phone': phone,
+        'nid': nid,
+        'advanceDeposit': advanceDeposit,
+        'moveInDate': moveInDate.toIso8601String(),
+        'email': email,
+        'occupation': occupation,
+        'alternatePhone': alternatePhone,
+        'photoUrl': photoUrl,
+        'moveOutDate': moveOutDate?.toIso8601String(),
+        'isActive': isActive,
+        'familyMembers': familyMembers.map((m) => m.toDocument()).toList(),
+        'documents': documents.map((d) => d.toJson()).toList(),
+        'landlordNotes': landlordNotes,
+      };
 }

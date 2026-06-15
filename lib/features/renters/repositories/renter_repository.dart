@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:barivara/features/renters/models/renter.dart';
 import 'package:barivara/features/billing/models/invoice.dart';
 
@@ -54,7 +55,7 @@ class RenterRepository {
       unitId: unitId,
       isActive: true,
     );
-    await docRef.set(newRenter.toJson());
+    await docRef.set(newRenter.toDocument());
 
     // Also update the unit status in unit collection
     await _firestore.collection('units').doc(unitId).update({
@@ -71,7 +72,7 @@ class RenterRepository {
     await _firestore
         .collection('renters')
         .doc(renter.id)
-        .update(renter.toJson());
+        .update(renter.toDocument());
   }
 
   Future<void> vacateRenter(
@@ -166,6 +167,25 @@ class RenterRepository {
               .map((doc) => Invoice.fromDocument(doc.data(), doc.id))
               .toList(),
         );
+  }
+
+  Stream<List<Invoice>> watchUnpaidInvoicesForOwner(String ownerId) {
+    return _firestore
+        .collection('properties')
+        .where('ownerId', isEqualTo: ownerId)
+        .snapshots()
+        .switchMap((propSnapshot) {
+      final propIds = propSnapshot.docs.map((d) => d.id).toList();
+      if (propIds.isEmpty) return Stream.value([]);
+      return _firestore
+          .collection('invoices')
+          .where('propertyId', whereIn: propIds.length <= 10 ? propIds : propIds.sublist(0, 10))
+          .where('status', whereIn: ['unpaid', 'due'])
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => Invoice.fromDocument(doc.data(), doc.id))
+              .toList());
+    });
   }
 
   Future<void> addInvoice(

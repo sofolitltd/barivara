@@ -94,6 +94,12 @@ final propertyInvoicesStreamProvider =
       return repository.watchAllInvoices(propertyId);
     });
 
+final unpaidInvoicesProvider =
+    StreamProvider.family<List<Invoice>, String>((ref, ownerId) {
+      final repository = ref.watch(renterRepositoryProvider);
+      return repository.watchUnpaidInvoicesForOwner(ownerId);
+    });
+
 final allRentPostsStreamProvider = StreamProvider<List<RentPost>>((ref) {
   final repository = ref.watch(listingRepositoryProvider);
   return repository.watchAllRentPosts();

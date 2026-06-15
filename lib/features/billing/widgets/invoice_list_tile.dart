@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import '../models/invoice.dart';
 
 class InvoiceListTile extends StatelessWidget {
@@ -8,6 +7,8 @@ class InvoiceListTile extends StatelessWidget {
   final VoidCallback onTap;
   final Color statusColor;
   final IconData statusIcon;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const InvoiceListTile({
     super.key,
@@ -16,6 +17,8 @@ class InvoiceListTile extends StatelessWidget {
     required this.onTap,
     required this.statusColor,
     required this.statusIcon,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -107,17 +110,21 @@ class InvoiceListTile extends StatelessWidget {
             ],
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.share_outlined,
-            size: 18,
-            color: isDark ? Colors.grey[400] : Colors.grey[600],
-          ),
-          onPressed: () => SharePlus.instance.share(
-            invoice.toShareMessage() as ShareParams,
-          ),
-          tooltip: 'Share Invoice',
-        ),
+        trailing: (onEdit != null || onDelete != null)
+            ? PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, size: 18, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                onSelected: (value) {
+                  if (value == 'edit' && onEdit != null) onEdit!();
+                  if (value == 'delete' && onDelete != null) onDelete!();
+                },
+                itemBuilder: (_) => [
+                  if (onEdit != null)
+                    const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit_outlined, size: 18), SizedBox(width: 8), Text('Edit')])),
+                  if (onDelete != null)
+                    const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_outline, size: 18, color: Colors.red), SizedBox(width: 8), Text('Delete', style: TextStyle(color: Colors.red))])),
+                ],
+              )
+            : null,
       ),
     );
   }
