@@ -190,14 +190,19 @@ class RenterRepository {
       renterId = doc.id;
     }
 
-    // Generate a short numeric invoice number based on timestamp
-    final invoiceNumber = DateTime.now().millisecondsSinceEpoch
-        .toString()
-        .substring(7);
-    final docRef = _firestore.collection('invoices').doc(invoiceNumber);
+    // Atomically increment per-property counter for sequential invoice number
+    final counterRef = _firestore.collection('counters').doc(propertyId);
+    final invoiceNumber = await _firestore.runTransaction<String>((tx) async {
+      final doc = await tx.get(counterRef);
+      final current = (doc.data()?['invoiceCurrent'] as int? ?? 0) + 1;
+      tx.set(counterRef, {'invoiceCurrent': current}, SetOptions(merge: true));
+      return current.toString().padLeft(4, '0');
+    });
 
+    final docRef = _firestore.collection('invoices').doc();
     final newInvoice = invoice.copyWith(
-      id: invoiceNumber,
+      id: docRef.id,
+      invoiceNumber: invoiceNumber,
       propertyId: propertyId,
       unitId: unitId,
       renterName: renterName,

@@ -293,7 +293,7 @@ as List<String>,
 /// @nodoc
 mixin _$Invoice {
 
- String get id; String get propertyId; String get unitId; String get monthYear; int get baseRent; Map<String, int> get utilities; int get otherCharges; int get totalAmount; String get status; List<Payment> get payments; String? get renterName; String? get renterId; DateTime? get createdAt; DateTime? get paidAt;
+ String get id; String get propertyId; String get unitId; String get monthYear; int get baseRent; Map<String, int> get utilities; int get otherCharges; int get totalAmount; String get status; String get invoiceNumber; List<Payment> get payments; String? get renterName; String? get renterId; DateTime? get createdAt; DateTime? get paidAt;
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -306,16 +306,16 @@ $InvoiceCopyWith<Invoice> get copyWith => _$InvoiceCopyWithImpl<Invoice>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Invoice&&(identical(other.id, id) || other.id == id)&&(identical(other.propertyId, propertyId) || other.propertyId == propertyId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.monthYear, monthYear) || other.monthYear == monthYear)&&(identical(other.baseRent, baseRent) || other.baseRent == baseRent)&&const DeepCollectionEquality().equals(other.utilities, utilities)&&(identical(other.otherCharges, otherCharges) || other.otherCharges == otherCharges)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.payments, payments)&&(identical(other.renterName, renterName) || other.renterName == renterName)&&(identical(other.renterId, renterId) || other.renterId == renterId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Invoice&&(identical(other.id, id) || other.id == id)&&(identical(other.propertyId, propertyId) || other.propertyId == propertyId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.monthYear, monthYear) || other.monthYear == monthYear)&&(identical(other.baseRent, baseRent) || other.baseRent == baseRent)&&const DeepCollectionEquality().equals(other.utilities, utilities)&&(identical(other.otherCharges, otherCharges) || other.otherCharges == otherCharges)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.invoiceNumber, invoiceNumber) || other.invoiceNumber == invoiceNumber)&&const DeepCollectionEquality().equals(other.payments, payments)&&(identical(other.renterName, renterName) || other.renterName == renterName)&&(identical(other.renterId, renterId) || other.renterId == renterId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,propertyId,unitId,monthYear,baseRent,const DeepCollectionEquality().hash(utilities),otherCharges,totalAmount,status,const DeepCollectionEquality().hash(payments),renterName,renterId,createdAt,paidAt);
+int get hashCode => Object.hash(runtimeType,id,propertyId,unitId,monthYear,baseRent,const DeepCollectionEquality().hash(utilities),otherCharges,totalAmount,status,invoiceNumber,const DeepCollectionEquality().hash(payments),renterName,renterId,createdAt,paidAt);
 
 @override
 String toString() {
-  return 'Invoice(id: $id, propertyId: $propertyId, unitId: $unitId, monthYear: $monthYear, baseRent: $baseRent, utilities: $utilities, otherCharges: $otherCharges, totalAmount: $totalAmount, status: $status, payments: $payments, renterName: $renterName, renterId: $renterId, createdAt: $createdAt, paidAt: $paidAt)';
+  return 'Invoice(id: $id, propertyId: $propertyId, unitId: $unitId, monthYear: $monthYear, baseRent: $baseRent, utilities: $utilities, otherCharges: $otherCharges, totalAmount: $totalAmount, status: $status, invoiceNumber: $invoiceNumber, payments: $payments, renterName: $renterName, renterId: $renterId, createdAt: $createdAt, paidAt: $paidAt)';
 }
 
 
@@ -326,7 +326,7 @@ abstract mixin class $InvoiceCopyWith<$Res>  {
   factory $InvoiceCopyWith(Invoice value, $Res Function(Invoice) _then) = _$InvoiceCopyWithImpl;
 @useResult
 $Res call({
- String id, String propertyId, String unitId, String monthYear, int baseRent, Map<String, int> utilities, int otherCharges, int totalAmount, String status, List<Payment> payments, String? renterName, String? renterId, DateTime? createdAt, DateTime? paidAt
+ String id, String propertyId, String unitId, String monthYear, int baseRent, Map<String, int> utilities, int otherCharges, int totalAmount, String status, String invoiceNumber, List<Payment> payments, String? renterName, String? renterId, DateTime? createdAt, DateTime? paidAt
 });
 
 
@@ -343,7 +343,7 @@ class _$InvoiceCopyWithImpl<$Res>
 
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? propertyId = null,Object? unitId = null,Object? monthYear = null,Object? baseRent = null,Object? utilities = null,Object? otherCharges = null,Object? totalAmount = null,Object? status = null,Object? payments = null,Object? renterName = freezed,Object? renterId = freezed,Object? createdAt = freezed,Object? paidAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? propertyId = null,Object? unitId = null,Object? monthYear = null,Object? baseRent = null,Object? utilities = null,Object? otherCharges = null,Object? totalAmount = null,Object? status = null,Object? invoiceNumber = null,Object? payments = null,Object? renterName = freezed,Object? renterId = freezed,Object? createdAt = freezed,Object? paidAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,propertyId: null == propertyId ? _self.propertyId : propertyId // ignore: cast_nullable_to_non_nullable
@@ -354,6 +354,7 @@ as int,utilities: null == utilities ? _self.utilities : utilities // ignore: cas
 as Map<String, int>,otherCharges: null == otherCharges ? _self.otherCharges : otherCharges // ignore: cast_nullable_to_non_nullable
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,invoiceNumber: null == invoiceNumber ? _self.invoiceNumber : invoiceNumber // ignore: cast_nullable_to_non_nullable
 as String,payments: null == payments ? _self.payments : payments // ignore: cast_nullable_to_non_nullable
 as List<Payment>,renterName: freezed == renterName ? _self.renterName : renterName // ignore: cast_nullable_to_non_nullable
 as String?,renterId: freezed == renterId ? _self.renterId : renterId // ignore: cast_nullable_to_non_nullable
@@ -444,10 +445,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  String invoiceNumber,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Invoice() when $default != null:
-return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
+return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.invoiceNumber,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
   return orElse();
 
 }
@@ -465,10 +466,10 @@ return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.bas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  String invoiceNumber,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)  $default,) {final _that = this;
 switch (_that) {
 case _Invoice():
-return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
+return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.invoiceNumber,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -485,10 +486,10 @@ return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.bas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String propertyId,  String unitId,  String monthYear,  int baseRent,  Map<String, int> utilities,  int otherCharges,  int totalAmount,  String status,  String invoiceNumber,  List<Payment> payments,  String? renterName,  String? renterId,  DateTime? createdAt,  DateTime? paidAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Invoice() when $default != null:
-return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
+return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.baseRent,_that.utilities,_that.otherCharges,_that.totalAmount,_that.status,_that.invoiceNumber,_that.payments,_that.renterName,_that.renterId,_that.createdAt,_that.paidAt);case _:
   return null;
 
 }
@@ -500,7 +501,7 @@ return $default(_that.id,_that.propertyId,_that.unitId,_that.monthYear,_that.bas
 @JsonSerializable()
 
 class _Invoice extends Invoice {
-  const _Invoice({required this.id, required this.propertyId, required this.unitId, required this.monthYear, required this.baseRent, final  Map<String, int> utilities = const {}, required this.otherCharges, required this.totalAmount, required this.status, final  List<Payment> payments = const [], this.renterName, this.renterId, this.createdAt, this.paidAt}): _utilities = utilities,_payments = payments,super._();
+  const _Invoice({required this.id, required this.propertyId, required this.unitId, required this.monthYear, required this.baseRent, final  Map<String, int> utilities = const {}, required this.otherCharges, required this.totalAmount, required this.status, this.invoiceNumber = '', final  List<Payment> payments = const [], this.renterName, this.renterId, this.createdAt, this.paidAt}): _utilities = utilities,_payments = payments,super._();
   factory _Invoice.fromJson(Map<String, dynamic> json) => _$InvoiceFromJson(json);
 
 @override final  String id;
@@ -518,6 +519,7 @@ class _Invoice extends Invoice {
 @override final  int otherCharges;
 @override final  int totalAmount;
 @override final  String status;
+@override@JsonKey() final  String invoiceNumber;
  final  List<Payment> _payments;
 @override@JsonKey() List<Payment> get payments {
   if (_payments is EqualUnmodifiableListView) return _payments;
@@ -543,16 +545,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Invoice&&(identical(other.id, id) || other.id == id)&&(identical(other.propertyId, propertyId) || other.propertyId == propertyId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.monthYear, monthYear) || other.monthYear == monthYear)&&(identical(other.baseRent, baseRent) || other.baseRent == baseRent)&&const DeepCollectionEquality().equals(other._utilities, _utilities)&&(identical(other.otherCharges, otherCharges) || other.otherCharges == otherCharges)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._payments, _payments)&&(identical(other.renterName, renterName) || other.renterName == renterName)&&(identical(other.renterId, renterId) || other.renterId == renterId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Invoice&&(identical(other.id, id) || other.id == id)&&(identical(other.propertyId, propertyId) || other.propertyId == propertyId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.monthYear, monthYear) || other.monthYear == monthYear)&&(identical(other.baseRent, baseRent) || other.baseRent == baseRent)&&const DeepCollectionEquality().equals(other._utilities, _utilities)&&(identical(other.otherCharges, otherCharges) || other.otherCharges == otherCharges)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.status, status) || other.status == status)&&(identical(other.invoiceNumber, invoiceNumber) || other.invoiceNumber == invoiceNumber)&&const DeepCollectionEquality().equals(other._payments, _payments)&&(identical(other.renterName, renterName) || other.renterName == renterName)&&(identical(other.renterId, renterId) || other.renterId == renterId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.paidAt, paidAt) || other.paidAt == paidAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,propertyId,unitId,monthYear,baseRent,const DeepCollectionEquality().hash(_utilities),otherCharges,totalAmount,status,const DeepCollectionEquality().hash(_payments),renterName,renterId,createdAt,paidAt);
+int get hashCode => Object.hash(runtimeType,id,propertyId,unitId,monthYear,baseRent,const DeepCollectionEquality().hash(_utilities),otherCharges,totalAmount,status,invoiceNumber,const DeepCollectionEquality().hash(_payments),renterName,renterId,createdAt,paidAt);
 
 @override
 String toString() {
-  return 'Invoice(id: $id, propertyId: $propertyId, unitId: $unitId, monthYear: $monthYear, baseRent: $baseRent, utilities: $utilities, otherCharges: $otherCharges, totalAmount: $totalAmount, status: $status, payments: $payments, renterName: $renterName, renterId: $renterId, createdAt: $createdAt, paidAt: $paidAt)';
+  return 'Invoice(id: $id, propertyId: $propertyId, unitId: $unitId, monthYear: $monthYear, baseRent: $baseRent, utilities: $utilities, otherCharges: $otherCharges, totalAmount: $totalAmount, status: $status, invoiceNumber: $invoiceNumber, payments: $payments, renterName: $renterName, renterId: $renterId, createdAt: $createdAt, paidAt: $paidAt)';
 }
 
 
@@ -563,7 +565,7 @@ abstract mixin class _$InvoiceCopyWith<$Res> implements $InvoiceCopyWith<$Res> {
   factory _$InvoiceCopyWith(_Invoice value, $Res Function(_Invoice) _then) = __$InvoiceCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String propertyId, String unitId, String monthYear, int baseRent, Map<String, int> utilities, int otherCharges, int totalAmount, String status, List<Payment> payments, String? renterName, String? renterId, DateTime? createdAt, DateTime? paidAt
+ String id, String propertyId, String unitId, String monthYear, int baseRent, Map<String, int> utilities, int otherCharges, int totalAmount, String status, String invoiceNumber, List<Payment> payments, String? renterName, String? renterId, DateTime? createdAt, DateTime? paidAt
 });
 
 
@@ -580,7 +582,7 @@ class __$InvoiceCopyWithImpl<$Res>
 
 /// Create a copy of Invoice
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? propertyId = null,Object? unitId = null,Object? monthYear = null,Object? baseRent = null,Object? utilities = null,Object? otherCharges = null,Object? totalAmount = null,Object? status = null,Object? payments = null,Object? renterName = freezed,Object? renterId = freezed,Object? createdAt = freezed,Object? paidAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? propertyId = null,Object? unitId = null,Object? monthYear = null,Object? baseRent = null,Object? utilities = null,Object? otherCharges = null,Object? totalAmount = null,Object? status = null,Object? invoiceNumber = null,Object? payments = null,Object? renterName = freezed,Object? renterId = freezed,Object? createdAt = freezed,Object? paidAt = freezed,}) {
   return _then(_Invoice(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,propertyId: null == propertyId ? _self.propertyId : propertyId // ignore: cast_nullable_to_non_nullable
@@ -591,6 +593,7 @@ as int,utilities: null == utilities ? _self._utilities : utilities // ignore: ca
 as Map<String, int>,otherCharges: null == otherCharges ? _self.otherCharges : otherCharges // ignore: cast_nullable_to_non_nullable
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,invoiceNumber: null == invoiceNumber ? _self.invoiceNumber : invoiceNumber // ignore: cast_nullable_to_non_nullable
 as String,payments: null == payments ? _self._payments : payments // ignore: cast_nullable_to_non_nullable
 as List<Payment>,renterName: freezed == renterName ? _self.renterName : renterName // ignore: cast_nullable_to_non_nullable
 as String?,renterId: freezed == renterId ? _self.renterId : renterId // ignore: cast_nullable_to_non_nullable

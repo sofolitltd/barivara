@@ -63,7 +63,7 @@ class InvoiceListTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                '#${invoice.id}',
+                '#${invoice.invoiceNumber.isEmpty ? invoice.id.substring(0, 6) : invoice.invoiceNumber}',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,

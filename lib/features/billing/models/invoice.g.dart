@@ -36,6 +36,7 @@ _Invoice _$InvoiceFromJson(Map<String, dynamic> json) => _Invoice(
   otherCharges: (json['otherCharges'] as num).toInt(),
   totalAmount: (json['totalAmount'] as num).toInt(),
   status: json['status'] as String,
+  invoiceNumber: json['invoiceNumber'] as String? ?? '',
   payments:
       (json['payments'] as List<dynamic>?)
           ?.map((e) => Payment.fromJson(e as Map<String, dynamic>))
@@ -61,6 +62,7 @@ Map<String, dynamic> _$InvoiceToJson(_Invoice instance) => <String, dynamic>{
   'otherCharges': instance.otherCharges,
   'totalAmount': instance.totalAmount,
   'status': instance.status,
+  'invoiceNumber': instance.invoiceNumber,
   'payments': instance.payments,
   'renterName': instance.renterName,
   'renterId': instance.renterId,

@@ -595,36 +595,6 @@ class _InvoiceDetailsPageState extends ConsumerState<InvoiceDetailsPage> {
           _isRecording = false;
           _selectedItems.clear();
         });
-        final messenger = ScaffoldMessenger.of(context);
-        messenger.showSnackBar(
-          SnackBar(
-            duration: const Duration(minutes: 5),
-            content: Row(
-              children: [
-                Expanded(child: Text('Payment of ৳$_selectedTotal recorded!')),
-                GestureDetector(
-                  onTap: () => messenger.hideCurrentSnackBar(),
-                  child: const Icon(Icons.close, size: 20, color: Colors.white70),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFF10B981),
-            behavior: SnackBarBehavior.floating,
-            action: SnackBarAction(
-              label: 'Undo',
-              textColor: Colors.white,
-              onPressed: () async {
-                for (final item in paidItems) {
-                  try {
-                    await ref
-                        .read(renterRepositoryProvider)
-                        .removePaidItem(invoice.id, item);
-                  } catch (_) {}
-                }
-              },
-            ),
-          ),
-        );
       }
     } catch (e) {
       if (context.mounted) {

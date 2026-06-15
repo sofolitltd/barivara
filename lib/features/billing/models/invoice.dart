@@ -34,6 +34,7 @@ abstract class Invoice with _$Invoice {
     required int otherCharges,
     required int totalAmount,
     required String status,
+    @Default('') String invoiceNumber,
     @Default([]) List<Payment> payments,
     String? renterName,
     String? renterId,
