@@ -4,7 +4,7 @@ description: "Home assisatant"
 publish_to: 'none'
 
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.10.1
@@ -38,6 +38,7 @@ dependencies:
   flutter_dotenv: ^6.0.1
   crypto: ^3.0.7
   file_picker: ^11.0.2
+  rxdart: ^0.28.0
   fl_chart: ^1.2.0
 
 dev_dependencies:
