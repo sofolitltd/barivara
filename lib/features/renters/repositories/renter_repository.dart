@@ -188,7 +188,7 @@ class RenterRepository {
     });
   }
 
-  Future<void> addInvoice(
+  Future<Invoice> addInvoice(
     String propertyId,
     String unitId,
     Invoice invoice,
@@ -232,6 +232,7 @@ class RenterRepository {
     final data = newInvoice.toJson();
     data['payments'] = newInvoice.payments.map((p) => p.toJson()).toList();
     await docRef.set(data);
+    return newInvoice;
   }
 
   Future<void> markInvoicePaid(

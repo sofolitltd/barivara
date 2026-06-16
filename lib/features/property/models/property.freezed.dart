@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Property {
 
- String get id; String get ownerId; String get name; String get address; String? get googleMapsUrl; String? get propertyType; String? get imageUrl; String? get videoUrl;
+ String get id; String get ownerId; String get name; String get address; int get reminderDay; int get reminderHour; bool get smsEnabled; String? get googleMapsUrl; String? get propertyType; String? get imageUrl; String? get videoUrl;
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PropertyCopyWith<Property> get copyWith => _$PropertyCopyWithImpl<Property>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Property&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.googleMapsUrl, googleMapsUrl) || other.googleMapsUrl == googleMapsUrl)&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Property&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.reminderDay, reminderDay) || other.reminderDay == reminderDay)&&(identical(other.reminderHour, reminderHour) || other.reminderHour == reminderHour)&&(identical(other.smsEnabled, smsEnabled) || other.smsEnabled == smsEnabled)&&(identical(other.googleMapsUrl, googleMapsUrl) || other.googleMapsUrl == googleMapsUrl)&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,ownerId,name,address,googleMapsUrl,propertyType,imageUrl,videoUrl);
+int get hashCode => Object.hash(runtimeType,id,ownerId,name,address,reminderDay,reminderHour,smsEnabled,googleMapsUrl,propertyType,imageUrl,videoUrl);
 
 @override
 String toString() {
-  return 'Property(id: $id, ownerId: $ownerId, name: $name, address: $address, googleMapsUrl: $googleMapsUrl, propertyType: $propertyType, imageUrl: $imageUrl, videoUrl: $videoUrl)';
+  return 'Property(id: $id, ownerId: $ownerId, name: $name, address: $address, reminderDay: $reminderDay, reminderHour: $reminderHour, smsEnabled: $smsEnabled, googleMapsUrl: $googleMapsUrl, propertyType: $propertyType, imageUrl: $imageUrl, videoUrl: $videoUrl)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PropertyCopyWith<$Res>  {
   factory $PropertyCopyWith(Property value, $Res Function(Property) _then) = _$PropertyCopyWithImpl;
 @useResult
 $Res call({
- String id, String ownerId, String name, String address, String? googleMapsUrl, String? propertyType, String? imageUrl, String? videoUrl
+ String id, String ownerId, String name, String address, int reminderDay, int reminderHour, bool smsEnabled, String? googleMapsUrl, String? propertyType, String? imageUrl, String? videoUrl
 });
 
 
@@ -65,13 +65,16 @@ class _$PropertyCopyWithImpl<$Res>
 
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? ownerId = null,Object? name = null,Object? address = null,Object? googleMapsUrl = freezed,Object? propertyType = freezed,Object? imageUrl = freezed,Object? videoUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? ownerId = null,Object? name = null,Object? address = null,Object? reminderDay = null,Object? reminderHour = null,Object? smsEnabled = null,Object? googleMapsUrl = freezed,Object? propertyType = freezed,Object? imageUrl = freezed,Object? videoUrl = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,ownerId: null == ownerId ? _self.ownerId : ownerId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,googleMapsUrl: freezed == googleMapsUrl ? _self.googleMapsUrl : googleMapsUrl // ignore: cast_nullable_to_non_nullable
+as String,reminderDay: null == reminderDay ? _self.reminderDay : reminderDay // ignore: cast_nullable_to_non_nullable
+as int,reminderHour: null == reminderHour ? _self.reminderHour : reminderHour // ignore: cast_nullable_to_non_nullable
+as int,smsEnabled: null == smsEnabled ? _self.smsEnabled : smsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,googleMapsUrl: freezed == googleMapsUrl ? _self.googleMapsUrl : googleMapsUrl // ignore: cast_nullable_to_non_nullable
 as String?,propertyType: freezed == propertyType ? _self.propertyType : propertyType // ignore: cast_nullable_to_non_nullable
 as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String ownerId,  String name,  String address,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String ownerId,  String name,  String address,  int reminderDay,  int reminderHour,  bool smsEnabled,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Property() when $default != null:
-return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
+return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.reminderDay,_that.reminderHour,_that.smsEnabled,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMaps
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String ownerId,  String name,  String address,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String ownerId,  String name,  String address,  int reminderDay,  int reminderHour,  bool smsEnabled,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Property():
-return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
+return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.reminderDay,_that.reminderHour,_that.smsEnabled,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMaps
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String ownerId,  String name,  String address,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String ownerId,  String name,  String address,  int reminderDay,  int reminderHour,  bool smsEnabled,  String? googleMapsUrl,  String? propertyType,  String? imageUrl,  String? videoUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Property() when $default != null:
-return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
+return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.reminderDay,_that.reminderHour,_that.smsEnabled,_that.googleMapsUrl,_that.propertyType,_that.imageUrl,_that.videoUrl);case _:
   return null;
 
 }
@@ -216,13 +219,16 @@ return $default(_that.id,_that.ownerId,_that.name,_that.address,_that.googleMaps
 @JsonSerializable()
 
 class _Property extends Property {
-  const _Property({required this.id, required this.ownerId, required this.name, required this.address, this.googleMapsUrl, this.propertyType, this.imageUrl, this.videoUrl}): super._();
+  const _Property({required this.id, required this.ownerId, required this.name, required this.address, this.reminderDay = 5, this.reminderHour = 8, this.smsEnabled = true, this.googleMapsUrl, this.propertyType, this.imageUrl, this.videoUrl}): super._();
   factory _Property.fromJson(Map<String, dynamic> json) => _$PropertyFromJson(json);
 
 @override final  String id;
 @override final  String ownerId;
 @override final  String name;
 @override final  String address;
+@override@JsonKey() final  int reminderDay;
+@override@JsonKey() final  int reminderHour;
+@override@JsonKey() final  bool smsEnabled;
 @override final  String? googleMapsUrl;
 @override final  String? propertyType;
 @override final  String? imageUrl;
@@ -241,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Property&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.googleMapsUrl, googleMapsUrl) || other.googleMapsUrl == googleMapsUrl)&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Property&&(identical(other.id, id) || other.id == id)&&(identical(other.ownerId, ownerId) || other.ownerId == ownerId)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.reminderDay, reminderDay) || other.reminderDay == reminderDay)&&(identical(other.reminderHour, reminderHour) || other.reminderHour == reminderHour)&&(identical(other.smsEnabled, smsEnabled) || other.smsEnabled == smsEnabled)&&(identical(other.googleMapsUrl, googleMapsUrl) || other.googleMapsUrl == googleMapsUrl)&&(identical(other.propertyType, propertyType) || other.propertyType == propertyType)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,ownerId,name,address,googleMapsUrl,propertyType,imageUrl,videoUrl);
+int get hashCode => Object.hash(runtimeType,id,ownerId,name,address,reminderDay,reminderHour,smsEnabled,googleMapsUrl,propertyType,imageUrl,videoUrl);
 
 @override
 String toString() {
-  return 'Property(id: $id, ownerId: $ownerId, name: $name, address: $address, googleMapsUrl: $googleMapsUrl, propertyType: $propertyType, imageUrl: $imageUrl, videoUrl: $videoUrl)';
+  return 'Property(id: $id, ownerId: $ownerId, name: $name, address: $address, reminderDay: $reminderDay, reminderHour: $reminderHour, smsEnabled: $smsEnabled, googleMapsUrl: $googleMapsUrl, propertyType: $propertyType, imageUrl: $imageUrl, videoUrl: $videoUrl)';
 }
 
 
@@ -261,7 +267,7 @@ abstract mixin class _$PropertyCopyWith<$Res> implements $PropertyCopyWith<$Res>
   factory _$PropertyCopyWith(_Property value, $Res Function(_Property) _then) = __$PropertyCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String ownerId, String name, String address, String? googleMapsUrl, String? propertyType, String? imageUrl, String? videoUrl
+ String id, String ownerId, String name, String address, int reminderDay, int reminderHour, bool smsEnabled, String? googleMapsUrl, String? propertyType, String? imageUrl, String? videoUrl
 });
 
 
@@ -278,13 +284,16 @@ class __$PropertyCopyWithImpl<$Res>
 
 /// Create a copy of Property
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? ownerId = null,Object? name = null,Object? address = null,Object? googleMapsUrl = freezed,Object? propertyType = freezed,Object? imageUrl = freezed,Object? videoUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? ownerId = null,Object? name = null,Object? address = null,Object? reminderDay = null,Object? reminderHour = null,Object? smsEnabled = null,Object? googleMapsUrl = freezed,Object? propertyType = freezed,Object? imageUrl = freezed,Object? videoUrl = freezed,}) {
   return _then(_Property(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,ownerId: null == ownerId ? _self.ownerId : ownerId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
-as String,googleMapsUrl: freezed == googleMapsUrl ? _self.googleMapsUrl : googleMapsUrl // ignore: cast_nullable_to_non_nullable
+as String,reminderDay: null == reminderDay ? _self.reminderDay : reminderDay // ignore: cast_nullable_to_non_nullable
+as int,reminderHour: null == reminderHour ? _self.reminderHour : reminderHour // ignore: cast_nullable_to_non_nullable
+as int,smsEnabled: null == smsEnabled ? _self.smsEnabled : smsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,googleMapsUrl: freezed == googleMapsUrl ? _self.googleMapsUrl : googleMapsUrl // ignore: cast_nullable_to_non_nullable
 as String?,propertyType: freezed == propertyType ? _self.propertyType : propertyType // ignore: cast_nullable_to_non_nullable
 as String?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,videoUrl: freezed == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable

@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../billing/pages/nesco_inapp_webview_screen.dart';
 import '../../models/property.dart';
 import '../../models/unit.dart';
 import 'unit_stat_grid.dart';
@@ -130,6 +133,12 @@ class InfoTab extends StatelessWidget {
                         );
                       },
                     ),
+                  if (entry.value.isNotEmpty && entry.key.toLowerCase().trim() == 'electricity')
+                    IconButton(
+                      icon: Icon(Icons.receipt_long, size: 16, color: Colors.teal),
+                      tooltip: 'Check Bill',
+                      onPressed: () => _showBillProviderDialog(context, entry.value),
+                    ),
                 ],
               ),
             );
@@ -137,6 +146,91 @@ class InfoTab extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _showBillProviderDialog(BuildContext context, String customerId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Select Provider'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.bolt, color: Colors.teal),
+              title: const Text('NESCO (Postpaid)'),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _openBillPortal(context, customerId,
+                  url: 'https://customer.nesco.gov.bd/post/bill',
+                  title: 'NESCO Postpaid',
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.bolt, color: Colors.teal),
+              title: const Text('NESCO (Prepaid)'),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _openBillPortal(context, customerId,
+                  url: 'https://customer.nesco.gov.bd/pre/panel',
+                  title: 'NESCO Prepaid',
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.electrical_services, color: Colors.orange),
+              title: const Text('DESCO (Postpaid)'),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _openBillPortal(context, customerId,
+                  url: 'https://billpay.sonalibank.com.bd/Desco/Bill/Index',
+                  title: 'DESCO Postpaid',
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.electrical_services, color: Colors.orange),
+              title: const Text('DESCO (Prepaid)'),
+              onTap: () {
+                Navigator.of(ctx).pop();
+                _openBillPortal(context, customerId,
+                  url: 'https://billpay.sonalibank.com.bd/Desco/Bill/PrepaidBillQuery',
+                  title: 'DESCO Prepaid',
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openBillPortal(BuildContext context, String customerId, {required String url, required String title}) async {
+    await Clipboard.setData(ClipboardData(text: customerId));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Copied: $customerId. Paste it on the portal.'),
+        duration: const Duration(seconds: 4),
+      ),
+    );
+
+    if (kIsWeb) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } else {
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (!context.mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => NescoInAppWebViewScreen(customerId: customerId, url: url, title: title),
+        ),
+      );
+    }
   }
 
   @override

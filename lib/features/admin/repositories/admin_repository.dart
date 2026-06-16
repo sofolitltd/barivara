@@ -104,14 +104,28 @@ class AdminRepository {
       'email': email,
       'phone': request.phone,
       'role': 'pending_landlord',
+      'plan': 'free',
       'status': 'pending',
     }, SetOptions(merge: true));
   }
 
   Future<void> approveLandlordRequest(String requestId, String userId) async {
-    await _firestore.collection('landlord_requests').doc(requestId).update({
-      'status': 'approved',
-    });
+    final requestDoc = await _firestore.collection('landlord_requests').doc(requestId).get();
+    final requestData = requestDoc.data();
+
+    if (requestData != null) {
+      await _firestore.collection('landlords').doc(userId).set({
+        'userId': userId,
+        'userName': requestData['userName'],
+        'phone': requestData['phone'],
+        'nidNumber': requestData['nidNumber'],
+        'ownerProofImageUrl': requestData['ownerProofImageUrl'] ?? '',
+        'approvedAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    await _firestore.collection('landlord_requests').doc(requestId).delete();
+
     await _firestore.collection('users').doc(userId).update({
       'role': 'landlord',
       'status': 'approved',
@@ -125,6 +139,12 @@ class AdminRepository {
     await _firestore.collection('users').doc(userId).update({
       'role': 'rejected_landlord',
       'status': 'rejected',
+    });
+  }
+
+  Future<void> setUserPlan(String userId, String plan) async {
+    await _firestore.collection('users').doc(userId).update({
+      'plan': plan,
     });
   }
 }

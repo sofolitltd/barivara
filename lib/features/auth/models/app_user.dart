@@ -12,6 +12,7 @@ abstract class AppUser with _$AppUser {
     required String phone,
     @Default('renter') String role, // 'renter', 'landlord', 'admin'
     @Default('none') String status, // 'none', 'pending', 'approved', 'rejected'
+    @Default('free') String plan, // 'free', 'pro'
     String? photoUrl,
   }) = _AppUser;
 
@@ -29,6 +30,7 @@ abstract class AppUser with _$AppUser {
     sanitizedData['phone'] ??= '';
     sanitizedData['role'] ??= 'renter';
     sanitizedData['status'] ??= 'none';
+    sanitizedData['plan'] ??= 'free';
     sanitizedData['photoUrl'] = docData['photoUrl'];
 
     return AppUser.fromJson(sanitizedData);

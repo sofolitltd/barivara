@@ -5,6 +5,8 @@ import 'package:barivara/features/billing/models/invoice.dart';
 import '/features/renters/repositories/renter_repository.dart';
 import '/shared/widgets/responsive_layout.dart';
 import '/shared/providers/home_providers.dart';
+import '/features/auth/providers/auth_providers.dart';
+import '/shared/services/sms_service.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AddBillPage extends ConsumerStatefulWidget {
@@ -35,6 +37,7 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
   int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
   bool _isSubmitting = false;
+  bool _sendSms = false;
 
   final _utilityTypes = [
     'Electricity',
@@ -121,29 +124,45 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
         paidAt: widget.initialInvoice?.paidAt,
       );
 
+      Invoice savedInvoice;
       if (widget.initialInvoice != null || widget.initialInvoiceId != null) {
         await renterRepo.updateInvoice(invoice);
+        savedInvoice = invoice;
       } else {
-        await renterRepo.addInvoice(widget.propertyId, widget.unitId, invoice);
+        savedInvoice = await renterRepo.addInvoice(widget.propertyId, widget.unitId, invoice);
+      }
+
+      String? smsError;
+      if (_sendSms && savedInvoice.renterId != null) {
+        debugPrint('[SMS] sending reminder: renterId=${savedInvoice.renterId}, invoiceId=${savedInvoice.id}');
+        smsError = await SmsService.sendReminder(savedInvoice.renterId!, savedInvoice.id);
+        debugPrint('[SMS] result: $smsError');
+      } else {
+        debugPrint('[SMS] skipped: _sendSms=$_sendSms, renterId=${savedInvoice.renterId}');
       }
 
       if (mounted) {
-        final savedInvoice = invoice;
         final messenger = ScaffoldMessenger.of(context);
         context.pop();
         messenger.showSnackBar(
           SnackBar(
-            duration: const Duration(minutes: 5),
+            duration: const Duration(seconds: 5),
             content: Row(
               children: [
-                const Expanded(child: Text('Bill generated successfully!')),
+                Expanded(
+                  child: Text(
+                    smsError != null
+                        ? 'Bill saved, but SMS failed: $smsError'
+                        : 'Bill generated successfully!',
+                  ),
+                ),
                 GestureDetector(
                   onTap: () => messenger.hideCurrentSnackBar(),
                   child: const Icon(Icons.close, size: 20, color: Colors.white70),
                 ),
               ],
             ),
-            backgroundColor: const Color(0xFF10B981),
+            backgroundColor: smsError != null ? const Color(0xFFF59E0B) : const Color(0xFF10B981),
             behavior: SnackBarBehavior.floating,
             action: SnackBarAction(
               label: 'Share',
@@ -475,6 +494,9 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
                       _buildTotalSummary(isDark),
                       const SizedBox(height: 32),
 
+                      _buildSmsCheckbox(isDark),
+                      const SizedBox(height: 32),
+
                       Center(
                         child: SizedBox(
                           width: ResponsiveLayout.isDesktop(context)
@@ -513,6 +535,44 @@ class _AddBillPageState extends ConsumerState<AddBillPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSmsCheckbox(bool isDark) {
+    final currentUser = ref.watch(currentUserProvider);
+    final isPro = currentUser.asData?.value?.plan == 'pro';
+
+    if (!isPro) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.sms, color: _sendSms ? const Color(0xFF6366F1) : Colors.grey),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Send SMS Reminder', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  'Notify renter via SMS about this bill',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _sendSms,
+            activeThumbColor: const Color(0xFF6366F1),
+            onChanged: (v) => setState(() => _sendSms = v),
+          ),
+        ],
+      ),
     );
   }
 

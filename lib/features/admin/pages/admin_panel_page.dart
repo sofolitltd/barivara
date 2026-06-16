@@ -219,6 +219,7 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> with SingleTick
           separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final landlord = landlords[index];
+            final isPro = landlord.plan == 'pro';
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -229,8 +230,12 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> with SingleTick
               child: Row(
                 children: [
                   CircleAvatar(
-                    backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                    child: Text(landlord.name[0], style: const TextStyle(color: Color(0xFF6366F1))),
+                    backgroundColor: (isPro ? Colors.amber : const Color(0xFF6366F1)).withValues(alpha: 0.1),
+                    child: Icon(
+                      isPro ? Icons.star : Icons.person,
+                      color: isPro ? Colors.amber : const Color(0xFF6366F1),
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -242,20 +247,39 @@ class _AdminPanelPageState extends ConsumerState<AdminPanelPage> with SingleTick
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(landlord.phone, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text('Verified', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isPro ? Colors.amber.withValues(alpha: 0.15) : Colors.grey.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      isPro ? 'PRO' : 'FREE',
+                      style: TextStyle(
+                        color: isPro ? Colors.amber[800] : Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    height: 36,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ref.read(adminRepositoryProvider).setUserPlan(
+                          landlord.uid,
+                          isPro ? 'free' : 'pro',
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isPro ? Colors.grey : Colors.amber,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: Text(isPro ? 'Downgrade' : 'Upgrade', style: const TextStyle(fontSize: 12)),
+                    ),
                   ),
                 ],
               ),

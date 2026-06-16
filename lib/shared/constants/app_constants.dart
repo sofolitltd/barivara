@@ -1,4 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConstants {
-  static const String baseUrl = 'http://localhost:55323'; // Change this for production
-  static const String invoiceLinkBase = '$baseUrl/invoice';
+  static String get baseUrl =>
+      dotenv.env['API_BASE_URL'] ?? 'http://localhost:55323';
+  static String get invoiceLinkBase => '$baseUrl/invoice';
 }

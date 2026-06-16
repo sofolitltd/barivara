@@ -42,12 +42,19 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
     'Other'
   ];
 
+  int _reminderDay = 5;
+  int _reminderHour = 8;
+  bool _smsEnabled = true;
+
   void _initializeWithProperty(Property property) {
     if (_isInitialized) return;
     _loadedProperty = property;
     _nameController.text = property.name;
     _addressController.text = property.address;
     _selectedPropertyType = property.propertyType;
+    _reminderDay = property.reminderDay;
+    _reminderHour = property.reminderHour;
+    _smsEnabled = property.smsEnabled;
     _imageUrlController.text = property.imageUrl ?? '';
     _mapLinkController.text = property.googleMapsUrl ?? '';
     _videoUrlController.text = property.videoUrl ?? '';
@@ -140,6 +147,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           name: _nameController.text.trim(),
           address: _addressController.text.trim(),
           propertyType: _selectedPropertyType,
+          reminderDay: _reminderDay,
+          reminderHour: _reminderHour,
+          smsEnabled: _smsEnabled,
           imageUrl: _imageUrlController.text.trim().isEmpty ? '' : _imageUrlController.text.trim(),
           googleMapsUrl: _mapLinkController.text.trim().isEmpty ? null : _mapLinkController.text.trim(),
           videoUrl: _videoUrlController.text.trim().isEmpty ? null : _videoUrlController.text.trim(),
@@ -152,6 +162,9 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
           address: _addressController.text.trim(),
           ownerId: currentUser.uid,
           propertyType: _selectedPropertyType,
+          reminderDay: _reminderDay,
+          reminderHour: _reminderHour,
+          smsEnabled: _smsEnabled,
           imageUrl: _imageUrlController.text.trim().isEmpty ? '' : _imageUrlController.text.trim(),
           googleMapsUrl: _mapLinkController.text.trim().isEmpty ? null : _mapLinkController.text.trim(),
           videoUrl: _videoUrlController.text.trim().isEmpty ? null : _videoUrlController.text.trim(),
@@ -260,6 +273,12 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
                     onChanged: (v) => setState(() => _selectedPropertyType = v),
                     isDark: isDark,
                   ),
+                  const SizedBox(height: 20),
+                  _buildReminderDayPicker(isDark),
+                  const SizedBox(height: 20),
+                  _buildReminderTimePicker(isDark),
+                  const SizedBox(height: 20),
+                  _buildSmsToggle(isDark),
                   const SizedBox(height: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,6 +410,107 @@ class _AddPropertyPageState extends ConsumerState<AddPropertyPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildReminderDayPicker(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Reminder Day', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<int>(
+          initialValue: _reminderDay,
+          items: List.generate(28, (i) => DropdownMenuItem(value: i + 1, child: Text('Day ${i + 1}'))),
+          onChanged: (v) {
+            if (v != null) setState(() => _reminderDay = v);
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'SMS reminders will be sent on this day each month',
+          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReminderTimePicker(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Reminder Time', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<int>(
+          initialValue: _reminderHour,
+          items: List.generate(24, (i) {
+            final t = '${i.toString().padLeft(2, '0')}:00';
+            return DropdownMenuItem(value: i, child: Text(t));
+          }),
+          onChanged: (v) {
+            if (v != null) setState(() => _reminderHour = v);
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Scheduled SMS time (24-hour format)',
+          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSmsToggle(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            _smsEnabled ? Icons.sms : Icons.sms_outlined,
+            color: _smsEnabled ? const Color(0xFF6366F1) : Colors.grey,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('SMS Reminders', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  _smsEnabled ? 'Rent reminders will be sent via SMS' : 'No SMS reminders for this property',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _smsEnabled,
+            activeThumbColor: const Color(0xFF6366F1),
+            onChanged: (v) => setState(() => _smsEnabled = v),
+          ),
+        ],
       ),
     );
   }
