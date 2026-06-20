@@ -359,7 +359,9 @@ class _AddFamilyMemberPageState extends State<AddFamilyMemberPage> {
         separatorBuilder: (context, index) => Divider(height: 1, color: isDark ? Colors.white10 : Colors.grey.withValues(alpha: 0.1)),
         itemBuilder: (context, index) {
           final doc = _documents[index];
-          return ListTile(
+          return Material(
+            type: MaterialType.transparency,
+            child: ListTile(
             leading: const Icon(Icons.description_outlined, color: Colors.blue),
             title: Text(doc.title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
             trailing: IconButton(
@@ -368,6 +370,7 @@ class _AddFamilyMemberPageState extends State<AddFamilyMemberPage> {
                 _documents.removeAt(index);
                 _documentFiles.removeAt(index);
               }),
+            ),
             ),
           );
         },

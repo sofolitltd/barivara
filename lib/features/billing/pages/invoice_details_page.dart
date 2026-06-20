@@ -398,26 +398,22 @@ class _InvoiceDetailsPageState extends ConsumerState<InvoiceDetailsPage> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Expanded(
-                      child: _iconAction(
-                        onPressed: () {
-                          context.pop();
-                          context.push(
-                            '/landlord/properties/${widget.propertyId}/units/${widget.unitId}/edit-bill/${invoice.id}',
-                            extra: invoice,
-                          );
-                        },
-                        icon: Icons.edit_outlined,
-                        color: Colors.grey[600]!,
-                      ),
+                    _iconAction(
+                      onPressed: () {
+                        context.pop();
+                        context.push(
+                          '/landlord/properties/${widget.propertyId}/units/${widget.unitId}/edit-bill/${invoice.id}',
+                          extra: invoice,
+                        );
+                      },
+                      icon: Icons.edit_outlined,
+                      color: Colors.grey[600]!,
                     ),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: _iconAction(
-                        onPressed: () => _handleDelete(context),
-                        icon: Icons.delete_outline_rounded,
-                        color: const Color(0xFFEF4444),
-                      ),
+                    _iconAction(
+                      onPressed: () => _handleDelete(context),
+                      icon: Icons.delete_outline_rounded,
+                      color: const Color(0xFFEF4444),
                     ),
                   ],
                 ),

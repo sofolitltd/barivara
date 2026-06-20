@@ -55,7 +55,7 @@ class BillingTab extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Invoice', style: TextStyle(color: Colors.red)),
-        content: Text('Delete invoice for ${invoice.monthYear} (#${invoice.invoiceNumber})? This cannot be undone.'),
+        content: Text('Delete invoice for ${invoice.monthYear} (#${invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : invoice.id.substring(0, 6)})? This cannot be undone.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           ElevatedButton(
@@ -75,7 +75,7 @@ class BillingTab extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             duration: const Duration(minutes: 5),
-            content: Text('Invoice #${invoice.invoiceNumber} deleted'),
+            content: Text('Invoice #${invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : invoice.id.substring(0, 6)} deleted'),
             action: SnackBarAction(label: '✕', textColor: Colors.white, onPressed: () => ScaffoldMessenger.of(context).hideCurrentSnackBar()),
           ),
         );
@@ -105,9 +105,32 @@ class BillingTab extends ConsumerWidget {
             children: [
               buildSectionHeader('Recent Invoices', isDark),
               TextButton.icon(
-                onPressed: () => context.push(
-                  '/landlord/properties/$propertyId/units/$unitId/add-bill',
-                ),
+                onPressed: () async {
+                  final repo = ref.read(renterRepositoryProvider);
+                  final hasRenter = await repo.hasActiveRenter(propertyId, unitId);
+                  if (!context.mounted) return;
+                  if (!hasRenter) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('No Active Renter'),
+                        content: const Text(
+                          'This unit doesn\'t have an active renter. Please add a renter first before creating a bill.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+                  context.push(
+                    '/landlord/properties/$propertyId/units/$unitId/add-bill',
+                  );
+                },
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('New Bill'),
                 style: TextButton.styleFrom(
@@ -126,9 +149,32 @@ class BillingTab extends ConsumerWidget {
                   title: 'No Invoices Yet',
                   subtitle: 'Bills generated for this unit will appear here.',
                   actionLabel: 'Create First Bill',
-                  onTap: () => context.push(
-                    '/landlord/properties/$propertyId/units/$unitId/add-bill',
-                  ),
+                  onTap: () async {
+                    final repo = ref.read(renterRepositoryProvider);
+                    final hasRenter = await repo.hasActiveRenter(propertyId, unitId);
+                    if (!context.mounted) return;
+                    if (!hasRenter) {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('No Active Renter'),
+                          content: const Text(
+                            'This unit doesn\'t have an active renter. Please add a renter first before creating a bill.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+                    context.push(
+                      '/landlord/properties/$propertyId/units/$unitId/add-bill',
+                    );
+                  },
                 );
               }
               return Column(

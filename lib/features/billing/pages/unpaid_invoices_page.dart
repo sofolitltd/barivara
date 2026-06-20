@@ -59,13 +59,14 @@ class UnpaidInvoicesPage extends ConsumerWidget {
             itemBuilder: (_, index) {
               final invoice = sorted[index];
               final ds = invoice.displayStatus;
-              return Container(
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.12)),
-                ),
+              return Material(
+                type: MaterialType.transparency,
                 child: ListTile(
+                  tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.12)),
+                  ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   onTap: () => context.push('/landlord/properties/${invoice.propertyId}/units/${invoice.unitId}/invoice-details/${invoice.id}'),
                   leading: Container(

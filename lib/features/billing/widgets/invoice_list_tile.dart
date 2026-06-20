@@ -23,18 +23,20 @@ class InvoiceListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : Colors.grey.withValues(alpha: 0.12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+        tileColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.grey.withValues(alpha: 0.12),
+          ),
         ),
-      ),
-      child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         onTap: onTap,
         leading: Container(
@@ -125,6 +127,7 @@ class InvoiceListTile extends StatelessWidget {
                 ],
               )
             : null,
+        ),
       ),
     );
   }

@@ -199,7 +199,7 @@ class _InvoiceDetailsDialogState extends ConsumerState<InvoiceDetailsDialog> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
-                          '#${invoice.id}',
+                          '#${invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : invoice.id.substring(0, 6)}',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,

@@ -19,7 +19,10 @@ class InvoicePdfGenerator {
     final monthYearSafe = invoice.monthYear
         .replaceAll(' ', '_')
         .replaceAll('/', '_');
-    final filename = 'invoice_${invoice.id}_$monthYearSafe.pdf';
+    final displayNum = invoice.invoiceNumber.isNotEmpty
+        ? invoice.invoiceNumber
+        : invoice.id.substring(0, 6);
+    final filename = 'invoice_${displayNum}_$monthYearSafe.pdf';
     await Printing.sharePdf(bytes: pdfData, filename: filename);
   }
 
@@ -86,7 +89,7 @@ class InvoicePdfGenerator {
                       ),
                       pw.SizedBox(height: 2),
                       pw.Text(
-                        '#${invoice.id}',
+                        '#${invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : invoice.id.substring(0, 6)}',
                         style: pw.TextStyle(
                           font: outfitRegular,
                           fontSize: 11,

@@ -13,6 +13,17 @@ class RenterRepository {
 
   RenterRepository(this._firestore);
 
+  Future<bool> hasActiveRenter(String propertyId, String unitId) async {
+    final snapshot = await _firestore
+        .collection('renters')
+        .where('propertyId', isEqualTo: propertyId)
+        .where('unitId', isEqualTo: unitId)
+        .where('isActive', isEqualTo: true)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
+  }
+
   // --- FLAT RENTERS ---
   Stream<List<Renter>> watchActiveRenter(String propertyId, String unitId) {
     return _firestore
@@ -208,6 +219,8 @@ class RenterRepository {
       final doc = renterSnapshot.docs.first;
       renterName = doc.data()['name'] as String?;
       renterId = doc.id;
+    } else {
+      throw Exception('No active renter found for this unit. Please add a renter before creating a bill.');
     }
 
     // Atomically increment per-property counter for sequential invoice number
